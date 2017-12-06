@@ -1,0 +1,6 @@
+framework module GLESImageKit {
+  umbrella header "GLESImageKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

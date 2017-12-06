@@ -1,0 +1,6 @@
+framework module Pods_GLESImageKit_Tests {
+  umbrella header "Pods-GLESImageKit_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

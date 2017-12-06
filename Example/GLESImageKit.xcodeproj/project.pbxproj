@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		402570191FCD66CE00CFF037 /* ZQLGLESProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */; };
+		40439FCF1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FCE1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift */; };
+		40439FD21FC8037C00EFAC1E /* ZQLOrientationDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */; };
+		40439FD41FC806B100EFAC1E /* ZQLRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */; };
+		40F519FD1FC2E38000C517F3 /* ZQLCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F519FC1FC2E38000C517F3 /* ZQLCamera.swift */; };
 		4DAF246CC61010C03C485DF6 /* Pods_GLESImageKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE421D6788E30E3DC2BE16E5 /* Pods_GLESImageKit_Example.framework */; };
 		5C61633A48FC1CE674959137 /* Pods_GLESImageKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 218C35B5F86200FE09F2844C /* Pods_GLESImageKit_Tests.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -29,6 +34,11 @@
 
 /* Begin PBXFileReference section */
 		218C35B5F86200FE09F2844C /* Pods_GLESImageKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GLESImageKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLGLESProgram.swift; sourceTree = "<group>"; };
+		40439FCE1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLCameraConfigure.swift; sourceTree = "<group>"; };
+		40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLOrientationDetector.swift; sourceTree = "<group>"; };
+		40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLRenderView.swift; sourceTree = "<group>"; };
+		40F519FC1FC2E38000C517F3 /* ZQLCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLCamera.swift; sourceTree = "<group>"; };
 		43645BFEC7B10EB47496D09F /* Pods-GLESImageKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GLESImageKit_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GLESImageKit_Example/Pods-GLESImageKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		5330D2BABCC72C6455CF91A8 /* Pods-GLESImageKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GLESImageKit_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GLESImageKit_Tests/Pods-GLESImageKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* GLESImageKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLESImageKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,10 +52,10 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6A7CE85F55A877AA6E9E9405 /* Pods-GLESImageKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GLESImageKit_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-GLESImageKit_Example/Pods-GLESImageKit_Example.release.xcconfig"; sourceTree = "<group>"; };
-		7B11FEB366C494F45C0FEA53 /* GLESImageKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = GLESImageKit.podspec; path = ../GLESImageKit.podspec; sourceTree = "<group>"; };
+		7B11FEB366C494F45C0FEA53 /* GLESImageKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = GLESImageKit.podspec; path = ../GLESImageKit.podspec; sourceTree = "<group>"; };
 		B55B368E1EA977EDC4876867 /* Pods-GLESImageKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GLESImageKit_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GLESImageKit_Tests/Pods-GLESImageKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		C434D4513AA580F7A80DD311 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		CAD57F28961017F88B18AEE4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		C434D4513AA580F7A80DD311 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		CAD57F28961017F88B18AEE4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		CE421D6788E30E3DC2BE16E5 /* Pods_GLESImageKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GLESImageKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -78,9 +88,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		40F519FA1FC2E34900C517F3 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				40F519FB1FC2E35600C517F3 /* Camera */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		40F519FB1FC2E35600C517F3 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				40F519FC1FC2E38000C517F3 /* ZQLCamera.swift */,
+				40439FCE1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift */,
+				40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */,
+				40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */,
+				402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				40F519FA1FC2E34900C517F3 /* Source */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for GLESImageKit */,
 				607FACE81AFB9204008FA782 /* Tests */,
@@ -215,10 +246,12 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = XDGAK6XCMW;
 						LastSwiftMigration = 0900;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = XDGAK6XCMW;
 						LastSwiftMigration = 0900;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
@@ -375,7 +408,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40439FD41FC806B100EFAC1E /* ZQLRenderView.swift in Sources */,
+				40F519FD1FC2E38000C517F3 /* ZQLCamera.swift in Sources */,
+				40439FCF1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift in Sources */,
+				40439FD21FC8037C00EFAC1E /* ZQLOrientationDetector.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				402570191FCD66CE00CFF037 /* ZQLGLESProgram.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -522,7 +560,10 @@
 			baseConfigurationReference = 43645BFEC7B10EB47496D09F /* Pods-GLESImageKit_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = XDGAK6XCMW;
 				INFOPLIST_FILE = GLESImageKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -537,7 +578,10 @@
 			baseConfigurationReference = 6A7CE85F55A877AA6E9E9405 /* Pods-GLESImageKit_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = XDGAK6XCMW;
 				INFOPLIST_FILE = GLESImageKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -551,6 +595,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B55B368E1EA977EDC4876867 /* Pods-GLESImageKit_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = XDGAK6XCMW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -572,6 +617,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5330D2BABCC72C6455CF91A8 /* Pods-GLESImageKit_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = XDGAK6XCMW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

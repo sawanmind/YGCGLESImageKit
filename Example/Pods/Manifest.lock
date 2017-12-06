@@ -1,0 +1,22 @@
+PODS:
+  - GLESImageKit (0.1.0)
+  - Nimble (7.0.2)
+  - Quick (1.2.0)
+
+DEPENDENCIES:
+  - GLESImageKit (from `../`)
+  - Nimble (~> 7.0.2)
+  - Quick (~> 1.2.0)
+
+EXTERNAL SOURCES:
+  GLESImageKit:
+    :path: ../
+
+SPEC CHECKSUMS:
+  GLESImageKit: 79624a1eb71c2549cdd1348c654ead4ef80c8944
+  Nimble: bfe1f814edabba69ff145cb1283e04ed636a67f2
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+
+PODFILE CHECKSUM: 8a2a5eb352c2bd77fe5118bb367a76982c0ef464
+
+COCOAPODS: 1.3.1
