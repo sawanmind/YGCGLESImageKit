@@ -29,7 +29,10 @@ class ZQLCamera: NSObject {
     
     let videoDeviceDiscoverySession:AVCaptureDevice.DiscoverySession
     
+    let context = ZQLSharedGLContext.shared
+    
     init(sessionPreset:AVCaptureSession.Preset) throws {
+        
         session.beginConfiguration()
          /// Video Device Initialize
         let deviceTypes = [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDualCamera, AVCaptureDevice.DeviceType.builtInTelephotoCamera]
@@ -72,6 +75,7 @@ class ZQLCamera: NSObject {
         }
         
         videoDataOutput = AVCaptureVideoDataOutput()
+        videoDataOutput.videoSettings = 
         videoDataOutput.alwaysDiscardsLateVideoFrames = false
         
         if session.canAddOutput(videoDataOutput) {

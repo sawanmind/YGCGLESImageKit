@@ -34,7 +34,7 @@ class ZQLGLESProgram {
         glAttachShader(program, self.vertexShader)
         glAttachShader(program, self.fragmentShader)
         
-        
+        try link()
     }
     
     deinit {
