@@ -29,8 +29,8 @@ class ZQLGLESProgram {
     
     init(vertex:String, fragment:String) throws {
         program = glCreateProgram()
-        self.vertexShader = try compile(shaderName: vertex, type: .vertex)
-        self.fragmentShader = try compile(shaderName: fragment, type: .fragment)
+        self.vertexShader = try compileShader(vertex, type: .vertex)
+        self.fragmentShader = try compileShader(fragment, type: .fragment)
         glAttachShader(program, self.vertexShader)
         glAttachShader(program, self.fragmentShader)
         
@@ -47,52 +47,64 @@ class ZQLGLESProgram {
         }
     }
     
-    private func compile(shaderName:String, type:ShaderType) throws -> GLuint {
-        guard let filePath = Bundle.main.path(forResource: shaderName, ofType: nil) else {
-            throw ShaderCompileError.fileNotExist
-        }
-        let shaderHandler:GLuint
+    func compileShader(_ shaderString:String, type:ShaderType) throws -> GLuint {
+        let shaderHandle:GLuint
         switch type {
-        case .vertex:
-            shaderHandler = glCreateShader(GLenum(GL_VERTEX_SHADER))
-        case .fragment:
-            shaderHandler = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
+            case .vertex: shaderHandle = glCreateShader(GLenum(GL_VERTEX_SHADER))
+            case .fragment: shaderHandle = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
         }
-        let shaderContent = try String(contentsOfFile: filePath, encoding: String.Encoding.utf8)
-        var source = shaderContent.toGLCharPointer()
-        glShaderSource(shaderHandler, 1, &source, nil)
-        glCompileShader(shaderHandler)
         
-        var compileSuccess:GLint = 1
-        glGetShaderiv(shaderHandler, GLenum(GL_COMPILE_STATUS), &compileSuccess)
-        if compileSuccess != 1 {
+        guard let filePath = Bundle.main.path(forResource: shaderString, ofType: nil) else {
+            fatalError("file not exist")
+        }
+        let str = try! NSString(contentsOfFile: filePath, encoding: String.Encoding.utf8.rawValue)
+        var cString = str.utf8String
+        var length = GLint(str.length)
+        glShaderSource(shaderHandle, 1, &cString, &length)
+        glCompileShader(shaderHandle)
+
+//        shaderString.withGLChar{glString in
+//            var tempString:UnsafePointer<GLchar>? = glString
+//            var length = tempString
+//            glShaderSource(shaderHandle, 1, &tempString, nil)
+//            glCompileShader(shaderHandle)
+//        }
+    
+        var compileStatus:GLint = 1
+        glGetShaderiv(shaderHandle, GLenum(GL_COMPILE_STATUS), &compileStatus)
+        if (compileStatus != 1) {
             var logLength:GLint = 0
-            glGetShaderiv(shaderHandler, GLenum(GL_INFO_LOG_LENGTH), &logLength)
-            if logLength > 0 {
-                var compileLog = Array<CChar>.init(repeating: 0, count: Int(logLength))
-                glGetShaderInfoLog(shaderHandler, logLength, &logLength, &compileLog)
-                print("compile shader error \(compileLog)")
+            glGetShaderiv(shaderHandle, GLenum(GL_INFO_LOG_LENGTH), &logLength)
+            if (logLength > 0) {
+                var compileLog = [CChar](repeating:0, count:Int(logLength))
+                
+                glGetShaderInfoLog(shaderHandle, logLength, &logLength, &compileLog)
+                print("Compile log: \(String(cString:compileLog))")
+                // let compileLogString = String(bytes:compileLog.map{UInt8($0)}, encoding:NSASCIIStringEncoding)
+                
                 switch type {
-                case .vertex: throw ShaderCompileError.vertexCompileError
-                case .fragment: throw ShaderCompileError.fragmentCompileError
+                    case .vertex: throw ShaderCompileError.vertexCompileError
+                    case .fragment: throw ShaderCompileError.fragmentCompileError
                 }
             }
         }
-        return shaderHandler
+        
+        return shaderHandle
     }
     
-    private func link() throws {
+    func link() throws {
         glLinkProgram(program)
         
-        var linkSuccess:GLint = 0
-        glGetShaderiv(program, GLenum(GL_LINK_STATUS), &linkSuccess)
-        if linkSuccess == 0 {
+        var linkStatus:GLint = 0
+        glGetProgramiv(program, GLenum(GL_LINK_STATUS), &linkStatus)
+        if (linkStatus == 0) {
             var logLength:GLint = 0
-            glGetShaderiv(program, GLenum(GL_INFO_LOG_LENGTH), &logLength)
-            if logLength > 0 {
-                var log = Array<CChar>.init(repeating: 0, count: Int(logLength))
-                glGetShaderInfoLog(program, logLength, &logLength, &log)
-                print("link error \(log)")
+            glGetProgramiv(program, GLenum(GL_INFO_LOG_LENGTH), &logLength)
+            if (logLength > 0) {
+                var compileLog = [CChar](repeating:0, count:Int(logLength))
+                
+                glGetProgramInfoLog(program, logLength, &logLength, &compileLog)
+                print("Link log: \(String(cString:compileLog))")
             }
             
             throw ShaderCompileError.linkError
@@ -102,13 +114,48 @@ class ZQLGLESProgram {
     func use() {
         glUseProgram(program)
     }
+    
+    func attributeLocation(attribute:String) -> GLuint? {
+        var attributeAddress:GLint = -1
+        attribute.withGLChar{glString in
+            attributeAddress = glGetAttribLocation(self.program, glString)
+        }
+        
+        if (attributeAddress < 0) {
+            return nil
+        } else {
+            glEnableVertexAttribArray(GLuint(attributeAddress))
+            return GLuint(attributeAddress)
+        }
+    }
+    
+    func uniformLocation(uniform:String) -> GLint? {
+        var uniformAddress:GLint = -1
+        uniform.withGLChar{glString in
+            uniformAddress = glGetUniformLocation(self.program, glString)
+        }
+        if (uniformAddress < 0) {
+            return nil
+        } else {
+            return uniformAddress
+        }
+    }
 }
 
 extension String {
-    func toGLCharPointer() -> UnsafePointer<GLchar>? {
-        if let cString = self.cString(using: String.Encoding.utf8) {
-            return UnsafePointer<GLchar>(cString)
+    func withNonZeroSuffix(_ suffix:Int) -> String {
+        if suffix == 0 {
+            return self
+        } else {
+            return "\(self)\(suffix + 1)"
         }
-        return nil
+    }
+    
+    func withGLChar(_ operation:(UnsafePointer<GLchar>) -> ()) {
+        if let value = self.cString(using:String.Encoding.utf8) {
+            operation(UnsafePointer<GLchar>(value))
+        } else {
+            fatalError("Could not convert this string to UTF8: \(self)")
+        }
     }
 }

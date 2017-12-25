@@ -9,6 +9,10 @@
 import UIKit
 import AVFoundation
 
+protocol ZQLCameraDelegate {
+    func didOutputSample(sampleBuffer:CMSampleBuffer)
+}
+
 enum GLESImageKitError:Error {
     case deviceNotFind
 }
@@ -23,13 +27,18 @@ class ZQLCamera: NSObject {
     let cameraDevice:AVCaptureDevice
     let cameraDeviceInput:AVCaptureDeviceInput
     let videoDataOutput:AVCaptureVideoDataOutput
+    let videoConnection:AVCaptureConnection
     
     let microphoneDevice:AVCaptureDevice
     let audioDeviceInput:AVCaptureDeviceInput
+    let audioDataOutput:AVCaptureAudioDataOutput
+    let audioConnection:AVCaptureConnection
     
     let videoDeviceDiscoverySession:AVCaptureDevice.DiscoverySession
     
-    let context = ZQLSharedGLContext.shared
+    let context = ZQLGLContext.shared
+    
+    public var delegate:ZQLCameraDelegate?
     
     init(sessionPreset:AVCaptureSession.Preset) throws {
         
@@ -75,12 +84,20 @@ class ZQLCamera: NSObject {
         }
         
         videoDataOutput = AVCaptureVideoDataOutput()
-        videoDataOutput.videoSettings = 
+        videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_32BGRA]
         videoDataOutput.alwaysDiscardsLateVideoFrames = false
         
         if session.canAddOutput(videoDataOutput) {
             session.addOutput(videoDataOutput)
         }
+        videoConnection = videoDataOutput.connection(with: AVMediaType.video)!
+        
+        audioDataOutput = AVCaptureAudioDataOutput()
+        if session.canAddOutput(audioDataOutput) {
+            session.addOutput(audioDataOutput)
+        }
+        
+        audioConnection = audioDataOutput.connection(with: AVMediaType.audio)!
         
         session.sessionPreset = sessionPreset
         session.commitConfiguration()
@@ -88,7 +105,7 @@ class ZQLCamera: NSObject {
         super.init()
         
         videoDataOutput.setSampleBufferDelegate(self, queue: videoQueue)
-        
+        audioDataOutput.setSampleBufferDelegate(self, queue: audioQueue)
     }
     
     func startCapture() {
@@ -111,6 +128,17 @@ class ZQLCamera: NSObject {
 
 extension ZQLCamera: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        if connection == videoConnection {
+            delegate?.didOutputSample(sampleBuffer: sampleBuffer)
+            
+        }else {
+            
+        }
+    }
+}
+
+extension ZQLCamera: AVCaptureAudioDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         
     }
 }

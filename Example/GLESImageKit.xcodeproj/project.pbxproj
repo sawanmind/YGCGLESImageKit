@@ -8,10 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		402570191FCD66CE00CFF037 /* ZQLGLESProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */; };
+		404101EE1FF002AD0082C25E /* ZQLRenderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404101ED1FF002AD0082C25E /* ZQLRenderUtil.swift */; };
 		40439FCF1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FCE1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift */; };
 		40439FD21FC8037C00EFAC1E /* ZQLOrientationDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */; };
 		40439FD41FC806B100EFAC1E /* ZQLRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */; };
-		4055D7291FE25972007DA329 /* ZQLSharedGLContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4055D7281FE25972007DA329 /* ZQLSharedGLContext.swift */; };
+		4055D7291FE25972007DA329 /* ZQLGLContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4055D7281FE25972007DA329 /* ZQLGLContext.swift */; };
 		406549B51FD8FBC4004DC37B /* baseVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 406549B41FD8FBC4004DC37B /* baseVertexShader.vsh */; };
 		406549B71FD9015A004DC37B /* baseFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 406549B61FD9015A004DC37B /* baseFragmentShader.fsh */; };
 		40F519FD1FC2E38000C517F3 /* ZQLCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F519FC1FC2E38000C517F3 /* ZQLCamera.swift */; };
@@ -38,10 +39,11 @@
 /* Begin PBXFileReference section */
 		218C35B5F86200FE09F2844C /* Pods_GLESImageKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GLESImageKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLGLESProgram.swift; sourceTree = "<group>"; };
+		404101ED1FF002AD0082C25E /* ZQLRenderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLRenderUtil.swift; sourceTree = "<group>"; };
 		40439FCE1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLCameraConfigure.swift; sourceTree = "<group>"; };
 		40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLOrientationDetector.swift; sourceTree = "<group>"; };
 		40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLRenderView.swift; sourceTree = "<group>"; };
-		4055D7281FE25972007DA329 /* ZQLSharedGLContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLSharedGLContext.swift; sourceTree = "<group>"; };
+		4055D7281FE25972007DA329 /* ZQLGLContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLGLContext.swift; sourceTree = "<group>"; };
 		406549B41FD8FBC4004DC37B /* baseVertexShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = baseVertexShader.vsh; sourceTree = "<group>"; };
 		406549B61FD9015A004DC37B /* baseFragmentShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = baseFragmentShader.fsh; sourceTree = "<group>"; };
 		40F519FC1FC2E38000C517F3 /* ZQLCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZQLCamera.swift; sourceTree = "<group>"; };
@@ -136,7 +138,8 @@
 				40439FD11FC8037C00EFAC1E /* ZQLOrientationDetector.swift */,
 				40439FD31FC806B100EFAC1E /* ZQLRenderView.swift */,
 				402570181FCD66CE00CFF037 /* ZQLGLESProgram.swift */,
-				4055D7281FE25972007DA329 /* ZQLSharedGLContext.swift */,
+				4055D7281FE25972007DA329 /* ZQLGLContext.swift */,
+				404101ED1FF002AD0082C25E /* ZQLRenderUtil.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -444,8 +447,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				40439FD41FC806B100EFAC1E /* ZQLRenderView.swift in Sources */,
-				4055D7291FE25972007DA329 /* ZQLSharedGLContext.swift in Sources */,
+				4055D7291FE25972007DA329 /* ZQLGLContext.swift in Sources */,
 				40F519FD1FC2E38000C517F3 /* ZQLCamera.swift in Sources */,
+				404101EE1FF002AD0082C25E /* ZQLRenderUtil.swift in Sources */,
 				40439FCF1FC53EDF00EFAC1E /* ZQLCameraConfigure.swift in Sources */,
 				40439FD21FC8037C00EFAC1E /* ZQLOrientationDetector.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,

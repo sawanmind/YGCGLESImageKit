@@ -1,6 +1,8 @@
-varying vec4 textureCoordinate;
-uniform sampler2D inputImageTexture;
+precision mediump float;
+uniform sampler2D u_Texture;
+varying vec2 v_TexCoordOut;
 
-void main() {
-    gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+void main(void) {
+    vec4 color = texture2D(u_Texture, v_TexCoordOut);
+    gl_FragColor = color;
 }

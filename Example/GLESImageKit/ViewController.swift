@@ -13,15 +13,16 @@ class ViewController: UIViewController {
     
     var camera:ZQLCamera!
     var previewLayer:AVCaptureVideoPreviewLayer!
+    var renderView:ZQLRenderView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        ZQLGLContext.shared.makeCurrentContext()
         camera = try! ZQLCamera(sessionPreset: AVCaptureSession.Preset.photo)
-        previewLayer = AVCaptureVideoPreviewLayer(session: camera.session)
-        previewLayer.bounds = UIScreen.main.bounds
-        previewLayer.position = self.view.center
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        self.view.layer.addSublayer(previewLayer)
+        camera.delegate = self
+        renderView = ZQLRenderView(frame: self.view.bounds)
+        self.view.addSubview(renderView)
+      //  renderView.renderQuad()
         camera.startCapture()
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -33,3 +34,8 @@ class ViewController: UIViewController {
 
 }
 
+extension ViewController: ZQLCameraDelegate {
+    func didOutputSample(sampleBuffer: CMSampleBuffer) {
+        renderView.displayCVPixel(sampleBuffer: sampleBuffer)
+    }
+}
