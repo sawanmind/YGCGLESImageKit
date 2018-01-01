@@ -18,11 +18,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ZQLGLContext.shared.makeCurrentContext()
-        camera = try! ZQLCamera(sessionPreset: AVCaptureSession.Preset.photo)
+        camera = try! ZQLCamera(sessionPreset: AVCaptureSession.Preset.photo, videoDevice: PhysicalVideoDeviceType.backCamera)
         camera.delegate = self
         renderView = ZQLRenderView(frame: self.view.bounds)
         self.view.addSubview(renderView)
-      //  renderView.renderQuad()
+        //renderView.renderQuad()
         camera.startCapture()
         // Do any additional setup after loading the view, typically from a nib.
     }

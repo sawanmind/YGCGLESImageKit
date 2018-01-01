@@ -40,12 +40,18 @@ class ZQLRenderView: UIView {
         1.0,  1.0, // top right
     ]
     
+    let verticallyInvertedImageVertices:[GLfloat] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
+    
     var textureCoordinate:[GLfloat] = [
         0.0, 0.0, // bottom left
         1.0, 0.0, // bottom right
         0.0,  1.0, // top left
         1.0,  1.0, // top right
     ]
+    
+    //var textureCoordinate:[GLfloat] = [0.0, 1.0, 1.0, 1.0,0.0, 0.0, 1.0, 0.0]
+    let rotateVertices:[GLfloat] = [1.0, -1.0, 1, 1, -1,-1,1,-1]
+    var rotateCoordinate:[GLfloat] =  [1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
 
     override public class var layerClass:Swift.AnyClass {
         get {
@@ -102,7 +108,7 @@ class ZQLRenderView: UIView {
             fatalError("View init error")
         }
         
-            glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_RENDERBUFFER), currentRenderBuffer!)
+        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_RENDERBUFFER), currentRenderBuffer!)
         
         let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
         if (status != GLenum(GL_FRAMEBUFFER_COMPLETE)) {
@@ -112,57 +118,98 @@ class ZQLRenderView: UIView {
     }
     
     func displayCVPixel(sampleBuffer:CMSampleBuffer) {
-        guard let frameBuffer = currentFrameBuffer else {
-            fatalError("frame buffer not intialized")
+        
+        if !Thread.isMainThread{
+            DispatchQueue.main.sync {
+                guard let frameBuffer = currentFrameBuffer else {
+                    fatalError("frame buffer not intialized")
+                }
+                
+                guard let positionSlot = shaderProgram.attributeLocation(attribute: "a_Position"), let textureCoordinateSlot = shaderProgram.attributeLocation(attribute: "a_TexCoordIn") else {
+                    fatalError("vertex has not position slot")
+                }
+                
+                guard let textureSlot = shaderProgram.uniformLocation(uniform: "u_Texture") else {
+                    fatalError("fragment has not texture slot")
+                }
+                
+                
+                glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer)
+                glViewport(0, 0, Int32(renderSize!.width), Int32(renderSize!.height))
+                shaderProgram.use()
+                
+                let pixel = CMSampleBufferGetImageBuffer(sampleBuffer)!
+                let bufferWidth = CVPixelBufferGetWidth(pixel)
+                let bufferHeight = CVPixelBufferGetHeight(pixel)
+                checkPixelBuffer(pixel: pixel)
+                var cvTexture:CVOpenGLESTexture? = nil
+                let error = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                    ZQLGLContext.shared.textureCache,
+                    pixel,
+                    nil,
+                    GLenum(GL_TEXTURE_2D),
+                    GL_RGBA,
+                    GLsizei(bufferWidth),
+                    GLsizei(bufferHeight),
+                    GLenum(GL_BGRA),
+                    GLenum(GL_UNSIGNED_BYTE),
+                    0,
+                    &cvTexture)
+                if error == kCVReturnError || cvTexture == nil {
+                    fatalError("texture cache create texture error")
+                }
+            
+                glActiveTexture(GLenum(GL_TEXTURE5))
+                glBindTexture(CVOpenGLESTextureGetTarget(cvTexture!), CVOpenGLESTextureGetName(cvTexture!))
+                glUniform1i(textureSlot, 5)
+                
+                glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
+                glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
+                glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
+                glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
+                
+                
+                glVertexAttribPointer(positionSlot, 2, GLenum(GL_FLOAT), 0, 0, vertices)
+                glEnableVertexAttribArray(GLuint(positionSlot))
+                
+                var textureSamplingSize:CGSize = CGSize.zero
+                let cropScaleAmount = CGSize(width: self.bounds.size.width / CGFloat(bufferWidth), height: self.bounds.size.height / CGFloat(bufferHeight));
+                if ( cropScaleAmount.height > cropScaleAmount.width ) {
+                    textureSamplingSize.width = self.bounds.size.width / ( CGFloat(bufferWidth) * CGFloat(cropScaleAmount.height) );
+                    textureSamplingSize.height = 1.0;
+                }
+                else {
+                    textureSamplingSize.width = 1.0;
+                    textureSamplingSize.height = self.bounds.size.height / ( CGFloat(bufferHeight) * CGFloat(cropScaleAmount.width) );
+                }
+                
+                let width1 = GLfloat(( 1.0 - textureSamplingSize.width ) / 2.0)
+                let width2 = GLfloat(( 1.0 + textureSamplingSize.width ) / 2.0)
+                let height1 = GLfloat(( 1.0 - textureSamplingSize.height ) / 2.0)
+                let height2 = GLfloat(( 1.0 + textureSamplingSize.height ) / 2.0)
+                // Perform a vertical flip by swapping the top left and the bottom left coordinate.
+                // CVPixelBuffers have a top left origin and OpenGL has a bottom left origin.
+                let passThroughTextureVertices:[GLfloat] = [
+                    width1, height2, // top left
+                    width2, height2, // top right
+                    width1, height1, // bottom left
+                    width2, height1, // bottom right
+                ];
+                
+                glVertexAttribPointer(textureCoordinateSlot, 2, GLenum(GL_FLOAT), 0, 0, rotateCoordinate)
+                glEnableVertexAttribArray(GLuint(textureCoordinateSlot))
+                glDrawArrays( GLenum(GL_TRIANGLE_STRIP), 0, 4 );
+                
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self.currentRenderBuffer!)
+                ZQLGLContext.shared.context.presentRenderbuffer(Int(GL_RENDERBUFFER))
+                
+                glBindTexture(CVOpenGLESTextureGetTarget(cvTexture!), 0)
+                glBindTexture(GLenum(GL_TEXTURE_2D), 0)
+               // CVPixelBufferUnlockBaseAddress(pixel, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+                CVOpenGLESTextureCacheFlush(ZQLGLContext.shared.textureCache, 0);
+            }
         }
         
-        guard let positionSlot = shaderProgram.attributeLocation(attribute: "a_Position"), let textureCoordinateSlot = shaderProgram.attributeLocation(attribute: "a_TexCoordIn") else {
-            fatalError("vertex has not position slot")
-        }
-        
-        guard let textureSlot = shaderProgram.uniformLocation(uniform: "u_Texture") else {
-            fatalError("fragment has not texture slot")
-        }
-        
-        let pixel = CMSampleBufferGetImageBuffer(sampleBuffer)!
-        let bufferWidth = CVPixelBufferGetWidth(pixel)
-        let bufferHeight = CVPixelBufferGetHeight(pixel)
-     //   CVPixelBufferLockBaseAddress(pixel, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-        checkPixelBuffer(pixel: pixel)
-        var cvTexture:CVOpenGLESTexture? = nil
-        let error = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, ZQLGLContext.shared.textureCache, pixel, nil, GLenum(GL_TEXTURE_2D), GL_RGBA, GLsizei(bufferWidth), GLsizei(bufferHeight), GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), 0, &cvTexture)
-        if error == kCVReturnError || cvTexture == nil {
-            fatalError("texture cache create texture error")
-        }
-        
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer)
-        glViewport(0, 0, Int32(renderSize!.width), Int32(renderSize!.height))
-        shaderProgram.use()
-        
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(CVOpenGLESTextureGetTarget(cvTexture!), CVOpenGLESTextureGetName(cvTexture!))
-        glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
-        glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
-        glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
-        glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
-        glUniform1i(textureSlot, 0)
-        
-        
-        
-        glVertexAttribPointer(GLuint(positionSlot), 2, GLenum(GL_FLOAT), 0, 0, vertices)
-        glEnableVertexAttribArray(GLuint(positionSlot))
-        
-        glVertexAttribPointer(GLuint(textureCoordinateSlot), 2, GLenum(GL_FLOAT), 0, 0, textureCoordinate)
-        glEnableVertexAttribArray(GLuint(textureCoordinateSlot))
-        
-        glDrawArrays( GLenum(GL_TRIANGLE_STRIP), 0, 4 );
-        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), currentRenderBuffer!)
-        ZQLGLContext.shared.context.presentRenderbuffer(Int(GL_RENDERBUFFER))
-        
-//        glBindTexture( CVOpenGLESTextureGetTarget(cvTexture!), 0 );
-//        glBindTexture(GLenum(GL_TEXTURE_2D), 0)
-//        CVPixelBufferUnlockBaseAddress(pixel, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
-//        glFlush()
     }
     
     func checkPixelBuffer(pixel:CVPixelBuffer){
@@ -181,6 +228,29 @@ class ZQLRenderView: UIView {
             fatalError("vertex has not position slot")
         }
         
+        guard let textureSlot = shaderProgram.uniformLocation(uniform: "u_Texture") else {
+            fatalError("texture not exist")
+        }
+        
+//        if let pixelBuffer = self.buffer(from: #imageLiteral(resourceName: "wuyanzu.jpg")) {
+//            let bufferWidth = CVPixelBufferGetWidth(pixelBuffer)
+//            let bufferHeight = CVPixelBufferGetHeight(pixelBuffer)
+//    //        let pixelForamt = cvpixelbufferget
+//            var cvTexture:CVOpenGLESTexture? = nil
+//            let error = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, ZQLGLContext.shared.textureCache, pixelBuffer, nil, GLenum(GL_TEXTURE_2D), GL_RGBA, GLsizei(bufferWidth), GLsizei(bufferHeight), GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), 0, &cvTexture)
+//            if error == kCVReturnError || cvTexture == nil {
+//                fatalError("texture cache create texture error")
+//            }
+//            
+//            glActiveTexture(GLenum(GL_TEXTURE0))
+//            glBindTexture(CVOpenGLESTextureGetTarget(cvTexture!), CVOpenGLESTextureGetName(cvTexture!))
+//            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
+//            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
+//            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
+//            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
+//            glUniform1i(textureSlot, 0)
+//        }
+        
         glVertexAttribPointer(GLuint(positionSlot), 2, GLenum(GL_FLOAT), 0, 0, vertices)
         glEnableVertexAttribArray(GLuint(positionSlot))
         
@@ -190,4 +260,31 @@ class ZQLRenderView: UIView {
         glDrawArrays( GLenum(GL_TRIANGLE_STRIP), 0, 4 );
         ZQLGLContext.shared.context.presentRenderbuffer(Int(GL_RENDERBUFFER))
     }
+    
+    func buffer(from image: UIImage) -> CVPixelBuffer? {
+        let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
+        var pixelBuffer : CVPixelBuffer?
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(image.size.width), Int(image.size.height), kCVPixelFormatType_32BGRA, attrs, &pixelBuffer)
+        guard (status == kCVReturnSuccess) else {
+            return nil
+        }
+        
+        CVPixelBufferLockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
+        let pixelData = CVPixelBufferGetBaseAddress(pixelBuffer!)
+        
+        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+        let context = CGContext(data: pixelData, width: Int(image.size.width), height: Int(image.size.height), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer!), space: rgbColorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
+        
+        context?.translateBy(x: 0, y: image.size.height)
+        context?.scaleBy(x: 1.0, y: -1.0)
+        
+        UIGraphicsPushContext(context!)
+        image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+        UIGraphicsPopContext()
+        CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
+        
+        return pixelBuffer
+    }
 }
+
+

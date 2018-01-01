@@ -34,19 +34,17 @@ class ZQLCamera: NSObject {
     let audioDataOutput:AVCaptureAudioDataOutput
     let audioConnection:AVCaptureConnection
     
-    let videoDeviceDiscoverySession:AVCaptureDevice.DiscoverySession
-    
     let context = ZQLGLContext.shared
+    
+    let semaphore = DispatchSemaphore(value: 1)
     
     public var delegate:ZQLCameraDelegate?
     
-    init(sessionPreset:AVCaptureSession.Preset) throws {
+    init(sessionPreset:AVCaptureSession.Preset, videoDevice:PhysicalVideoDeviceType = .backCamera) throws {
         
         session.beginConfiguration()
          /// Video Device Initialize
-        let deviceTypes = [AVCaptureDevice.DeviceType.builtInWideAngleCamera, AVCaptureDevice.DeviceType.builtInDualCamera, AVCaptureDevice.DeviceType.builtInTelephotoCamera]
-        videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession.init(deviceTypes: deviceTypes, mediaType: AVMediaType.video, position: AVCaptureDevice.Position.unspecified)
-        if let videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: AVCaptureDevice.Position.unspecified) {
+        if let videoDevice = videoDevice.device() {
             self.cameraDevice = videoDevice
         }else {
             throw GLESImageKitError.deviceNotFind
@@ -84,7 +82,7 @@ class ZQLCamera: NSObject {
         }
         
         videoDataOutput = AVCaptureVideoDataOutput()
-        videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_32BGRA]
+        videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
         videoDataOutput.alwaysDiscardsLateVideoFrames = false
         
         if session.canAddOutput(videoDataOutput) {
@@ -129,8 +127,9 @@ class ZQLCamera: NSObject {
 extension ZQLCamera: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if connection == videoConnection {
+            guard (semaphore.wait(timeout:DispatchTime.now()) == DispatchTimeoutResult.success) else { return }
             delegate?.didOutputSample(sampleBuffer: sampleBuffer)
-            
+            semaphore.signal()
         }else {
             
         }
